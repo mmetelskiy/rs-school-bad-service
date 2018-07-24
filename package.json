@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/mmetelskiy/rs-school-bad-service#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.3",
+    "uuid": "^3.3.2",
+    "verror": "^1.10.0",
     "winston": "^3.0.0"
   }
 }

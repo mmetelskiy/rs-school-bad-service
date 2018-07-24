@@ -1,0 +1,8 @@
+{
+  "aliveSeconds": 900,
+  "probabilityOfDeath": 0.7,
+  "deadSeconds": 300,
+  "server": {
+    "port": 9090
+  }
+}

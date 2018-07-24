@@ -76,7 +76,9 @@ class ServerController {
     // in x seconds emit stop with the probability of y
     // wait for z seconds and... emit start
     this.start(() => {
-      this.waitForDeath();
+      if (this.probabilityOfDeath !== 0) {
+        this.waitForDeath();
+      }
     });
   }
 }
