@@ -3,6 +3,7 @@ const bodyparser = require('body-parser');
 const WError = require('verror').WError;
 
 const logger = require('./logger');
+const spoiler = require('./spoiler');
 
 const replyWithError = function (req, res, error, status) {
   status = status || 500;
@@ -39,10 +40,34 @@ const parseInput = function (req, res, next) {
   }
 };
 
+const MIN_TEMP = -40;
+const MAX_TEMP = 90;
+
+const getResponseBody = function (city) {
+  return {
+    city,
+    temperature: Math.floor(Math.random() * (MAX_TEMP - MIN_TEMP) + MIN_TEMP)
+  };
+};
+
 const requestHandler = function (req, res) {
-  res.status(200).json({
-    message: 'success'
-  });
+  const city = req.params.city;
+
+  if (!city) {
+    replyWithError(req, res, 'City not specified.', 400);
+    return;
+  }
+
+  const responseBody = getResponseBody(city);
+
+  const spoilerIndex = req.query && req.query.spoiler;
+
+  if (spoilerIndex !== undefined) {
+    spoiler.spoilByIndex(req, res, responseBody, spoilerIndex, replyWithError);
+    return;
+  }
+
+  res.send();
 };
 
 const notFoundHandler = function (req, res) {
@@ -74,7 +99,7 @@ class Server {
   }
 
   bindRoutes() {
-    this.app.post('/', [
+    this.app.post('/:city', [
       parseInput,
       requestHandler
     ]);
