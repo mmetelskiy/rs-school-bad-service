@@ -2,6 +2,7 @@ const express = require('express');
 const bodyparser = require('body-parser');
 const WError = require('verror').WError;
 
+const config = require('./config.json');
 const logger = require('./logger');
 const spoiler = require('./spoiler');
 
@@ -41,7 +42,7 @@ const parseInput = function (req, res, next) {
 };
 
 const MIN_TEMP = -40;
-const MAX_TEMP = 90;
+const MAX_TEMP = 50;
 
 const getResponseBody = function (city) {
   return {
@@ -51,7 +52,7 @@ const getResponseBody = function (city) {
 };
 
 const requestHandler = function (req, res) {
-  const city = req.params.city;
+  const city = req.body && req.body.city;
 
   if (!city) {
     replyWithError(req, res, 'City not specified.', 400);
@@ -67,7 +68,13 @@ const requestHandler = function (req, res) {
     return;
   }
 
-  res.send();
+  if (Math.random() < config.successProbability) {
+    res
+      .status(200)
+      .json(responseBody);
+  } else {
+    spoiler.useRandomSpoiler(req, res, responseBody, replyWithError);
+  }
 };
 
 const notFoundHandler = function (req, res) {
@@ -99,7 +106,7 @@ class Server {
   }
 
   bindRoutes() {
-    this.app.post('/:city', [
+    this.app.post('/weather', [
       parseInput,
       requestHandler
     ]);
