@@ -42,35 +42,21 @@ const spoilers = [
         city: cities[Math.floor(Math.random() * cities.length)],
         temperature: responseBody.temperature
       });
+  },
+  function cityAsArray(req, res, responseBody, replyWithError) {
+    res
+      .status(200)
+      .json({
+        city: [responseBody.city],
+        temperature: responseBody.temperature
+      });
   }
 ];
 
-const probabilityForSpoiler = 1.0 / spoilers.length;
-const prefixSums = Array.from({ length: spoilers.length }, (x, i) => {
-  return i * probabilityForSpoiler;
-});
-
-const getSpoilerIndexByProbability = function (p, l, r) {
-  const index = l + Math.floor((r - l) / 2);
-
-  if (l >= r) {
-    return l;
-  }
-  if (prefixSums[index] === p) {
-    return index;
-  } else if (p < prefixSums[index]) {
-    return getSpoilerIndexByProbability(p, l, index);
-  } else {
-    return getSpoilerIndexByProbability(p, index + 1, r);
-  }
-};
-
 exports.useRandomSpoiler = function (req, res, responseBody, replyWithError) {
-  const randomNumber = Math.random();
-  const randomIndex = getSpoilerIndexByProbability(randomNumber, 0, prefixSums.length) - 1;
+  const randomIndex = Math.floor(Math.random() * spoilers.length);
 
   if (!spoilers[randomIndex]) {
-    logger.error(`Binary search error: random ${randomNumber}, prefixSums ${prefixSums.join(', ')}`)
     randomIndex = 0;
   }
 
