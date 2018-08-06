@@ -13,6 +13,9 @@ const spoilers = [
   function doNotSendAnything(req, res, responseBody, replyWithError) {
     return;
   },
+  function abortConnection(req, res, responseBody, replyWithError) {
+    req.connection.destroy();
+  },
   function cutJsonBody(req, res, responseBody, replyWithError) {
     const jsonAsString = JSON.stringify(responseBody);
 
@@ -35,7 +38,7 @@ const spoilers = [
   function serverError(req, res, responseBody, replyWithError) {
     replyWithError(req, res, 'Internal server error.', 500);
   },
-  function returnNonRequestdData(req, res, responseBody, replyWithError) {
+  function returnNonRequestedData(req, res, responseBody, replyWithError) {
     res
       .status(200)
       .json({
